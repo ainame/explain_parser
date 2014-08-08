@@ -28,8 +28,8 @@ input <<-EOS
 1 row in set (0.00 sec)
 EOS
 
-parser = ExplainParser.new(input)
-explains = parser.parse
+explains = ExplainParser.call(input) # return result as Array
+
 explain = explains.first
 
 explain.id #=> 1
