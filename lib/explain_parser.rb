@@ -86,14 +86,7 @@ class ExplainParser
         case val
         when String
           stripped_value = val.strip
-          case stripped_value
-          when 'NULL'
-            nil
-          when /\d+/
-            stripped_value.to_i
-          else
-            stripped_value
-          end
+          stripped_value == 'NULL' ? nil : stripped_value
         else
           val
         end
