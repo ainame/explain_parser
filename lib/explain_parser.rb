@@ -107,7 +107,7 @@ class ExplainParser
 
     def build
       values_list.reduce([]) do |explains, values|
-        params = keys.zip(cleanup_values(values)).inject({}) { |h, (k, v)| h[k] = v; h }
+        params = keys.zip(cleanup_values(values)).inject({}) { |h, (k, v)| h[k.downcase] = v; h }
         explains << ExplainParser::Explain.new(params)
         explains
       end
@@ -143,7 +143,7 @@ class ExplainParser
     end
 
     def keys()
-      @keys ||= rows[0].chomp.split('|').compact.map(&:strip).reject(&:empty?).map(&:downcase)
+      @keys ||= rows[0].chomp.split('|').compact.map(&:strip).reject(&:empty?)
     end
 
     def values_list()
