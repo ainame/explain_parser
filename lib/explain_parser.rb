@@ -1,10 +1,15 @@
 require "explain_parser/version"
 
+unless defined?(::Mysql2::Result)
+  module Mysql2; class Result; end; end
+end
+
 class ExplainParser
 
   class Explain
     COLUMNS = [
-      :id, :select_type, :table, :type, :possible_keys, :key, :key_len, :len, :ref, :rows, :filtered, :extra
+      :id, :select_type, :table, :type, :possible_keys,
+      :key, :key_len, :len, :ref, :rows, :filtered, :extra
     ].freeze
 
     def initialize(params)
@@ -77,7 +82,27 @@ class ExplainParser
     end
 
     def cleanup_values(dirty_values)
-      dirty_values.map(&:strip).reject(&:empty?).map {|val| val == 'NULL' ? nil : val }
+      dirty_values.map do |val|
+        case val
+        when String
+          stripped_value = val.strip
+          case stripped_value
+          when 'NULL'
+            nil
+          when /\d+/
+            stripped_value.to_i
+          else
+            stripped_value
+          end
+        else
+          val
+        end
+      end.reject do |val|
+        case val
+        when String
+          val.empty?
+        end
+      end
     end
 
     def build
@@ -99,7 +124,7 @@ class ExplainParser
     end
 
     def values_list
-      @exlpain.to_a
+      @explain.to_a
     end
   end
 
