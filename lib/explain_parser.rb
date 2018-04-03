@@ -43,7 +43,7 @@ class ExplainParser
     end
 
     def using_index?
-      !!(extra =~ /Using index/)
+      !!(extra =~ /Using index(?! condition)/)
     end
   end
 

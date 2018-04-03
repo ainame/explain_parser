@@ -113,4 +113,25 @@ describe ExplainParser do
       end
     end
   end
+
+  context 'given explain string that using ICP' do
+    let(:input) do
+      <<-EOS
++----+-------------+-------+-------+------------------------+
+| id | select_type | table | type  | Extra                  |
++----+-------------+-------+-------+------------------------+
+|  1 | SIMPLE      | tc    | range | Using index condition  |
++----+-------------+-------+-------+------------------------+
+1 row in set (0.00 sec)
+    EOS
+    end
+
+    describe 'Explain#using_index?' do
+      subject do
+        explain = ExplainParser.call(input)[0]
+        explain.using_index?
+      end
+      it { is_expected.to be_falsey }
+    end
+  end
 end
