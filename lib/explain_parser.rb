@@ -3,6 +3,9 @@ require "explain_parser/version"
 unless defined?(::Mysql2::Result)
   module Mysql2; class Result; end; end
 end
+unless defined?(::Trilogy::Result)
+  module Trilogy; class Result; end; end
+end
 
 class ExplainParser
 
@@ -61,6 +64,8 @@ class ExplainParser
       FromTableString.new(@explain).call
     when ::Mysql2::Result
       FromMysql2Result.new(@explain).call
+    when ::Trilogy::Result
+      FromTrilogyResult.new(@explain).call
     end
   end
 
@@ -108,6 +113,20 @@ class ExplainParser
   end
 
   class FromMysql2Result < Base
+    def initialize(explain)
+      @explain = explain
+    end
+
+    def keys
+      @explain.fields
+    end
+
+    def values_list
+      @explain.to_a
+    end
+  end
+
+  class FromTrilogyResult < Base
     def initialize(explain)
       @explain = explain
     end
