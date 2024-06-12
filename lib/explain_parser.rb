@@ -66,6 +66,8 @@ class ExplainParser
       FromMysql2Result.new(@explain).call
     when ::Trilogy::Result
       FromTrilogyResult.new(@explain).call
+    else
+      raise ArgumentError, "Unsupported class"
     end
   end
 
