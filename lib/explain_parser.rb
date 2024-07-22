@@ -1,12 +1,5 @@
 require "explain_parser/version"
 
-unless defined?(::Mysql2::Result)
-  module Mysql2; class Result; end; end
-end
-unless defined?(::Trilogy::Result)
-  module Trilogy; class Result; end; end
-end
-
 class ExplainParser
 
   class Explain
@@ -59,16 +52,25 @@ class ExplainParser
   end
 
   def call
-    case @explain
-    when ::String
-      FromTableString.new(@explain).call
-    when ::Mysql2::Result
-      FromMysql2Result.new(@explain).call
-    when ::Trilogy::Result
-      FromTrilogyResult.new(@explain).call
-    else
-      raise ArgumentError, "Unsupported class"
+    target_class = @explain.class
+
+    if target_class == String
+      return FromTableString.new(@explain).call
     end
+
+    if defined?(::Mysql2)
+      if target_class == Mysql2::Result
+        return FromMysql2Result.new(@explain).call
+      end
+    end
+
+    if defined?(::Trilogy)
+      if target_class == Trilogy::Result
+        return FromTrilogyResult.new(@explain).call
+      end
+    end
+
+    raise ArgumentError, "Unsupported class"
   end
 
   class Base
