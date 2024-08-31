@@ -1,6 +1,15 @@
 require 'spec_helper'
 
 describe ExplainParser do
+  context 'given unsupported class' do
+    subject { ExplainParser.new(nil) }
+    describe '#call' do
+      it 'should ExplainParser::Explain' do
+        expect { subject.call }.to raise_error(ArgumentError, "Unsupported class")
+      end
+    end
+  end
+
   context 'given explain string' do
     let(:input) do
       <<-EOS
